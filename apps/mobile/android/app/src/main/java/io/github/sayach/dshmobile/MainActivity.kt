@@ -1006,11 +1006,15 @@ class MainActivity : Activity() {
 
     private fun connectRemoteLink(raw: String, status: TextView) {
         val connection = GatewayConnection.parse(raw.trim())
-        if (connection == null || !isRemoteTunnelHost(connection.origin.host)
-            || GatewayUrlPolicy.pairingKey(raw.trim()) == null) {
+        if (connection == null || !isRemoteTunnelHost(connection.origin.host)) {
             status.setTextColor(getColor(R.color.app_error))
             status.setText(R.string.invalid_remote_link)
             status.visibility = View.VISIBLE
+            return
+        }
+        val key = GatewayUrlPolicy.pairingKey(raw.trim())
+        if (key == null) {
+            showBrowser(connection.origin, null)
             return
         }
         showPairing(manualHarness(connection.origin), prefilledInput = raw.trim(), autoConnect = true)
@@ -1209,6 +1213,12 @@ class MainActivity : Activity() {
         val connection = if (directKey == null) GatewayConnection.parse(input) else null
         val key = directKey ?: GatewayUrlPolicy.pairingKey(input)
         if (key == null) {
+            if (connection != null && isOriginAllowedForAccessMode(connection.origin)) {
+                runOnUiThread {
+                    showBrowser(connection.origin, null)
+                }
+                return
+            }
             status.setText(R.string.invalid_pairing_key)
             status.visibility = View.VISIBLE
             pairing.requestFocus()
@@ -1884,7 +1894,7 @@ class MainActivity : Activity() {
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         CookieManager.getInstance().apply {
             setAcceptCookie(true)
-            setAcceptThirdPartyCookies(browser, false)
+            setAcceptThirdPartyCookies(browser, true)
         }
         val secureClient = SecureWebViewClient(
             origin = origin,

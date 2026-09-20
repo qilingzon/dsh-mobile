@@ -65,21 +65,37 @@ internal class SecureWebViewClient(
         clearTimeout()
     }
 
+    private fun isAuthUrl(url: String): Boolean {
+        val lower = url.lowercase()
+        return lower.contains("cloudflareaccess.com") ||
+            lower.contains("/cdn-cgi/access/") ||
+            lower.contains("login") ||
+            lower.contains("auth") ||
+            lower.contains("oauth")
+    }
+
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         val candidate = request.url.toString()
         if (!request.isForMainFrame) return shouldBlockSubframeNavigation(origin, candidate)
         if (GatewayUrlPolicy.isSameOrigin(origin, candidate)) return false
-        if (request.hasGesture() && GatewayUrlPolicy.isExternalHttps(candidate)) {
+        if (GatewayUrlPolicy.isExternalHttps(candidate)) {
+            if (!request.hasGesture() || isAuthUrl(candidate)) {
+                return false
+            }
             openExternal(request.url)
-        } else {
-            onBlocked()
+            return true
         }
+        onBlocked()
         return true
     }
 
     override fun onPageStarted(view: WebView, url: String, favicon: android.graphics.Bitmap?) {
         onTopLevelUrlChanged(url)
         if (url != "about:blank" && !GatewayUrlPolicy.isSameOrigin(origin, url)) {
+            if (GatewayUrlPolicy.isExternalHttps(url)) {
+                clearTimeout()
+                return
+            }
             clearTimeout()
             view.stopLoading()
             onBlocked()

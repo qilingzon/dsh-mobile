@@ -30,6 +30,8 @@
 
 > DSH Mobile 是 DeepSeek Harness 社区插件，原生 App 仅支持 Android。
 >
+> **0.4.4 更新**：支持 Cloudflare Access 与反向代理认证无感放行，解决手机客户端重定向“已阻止跳转”问题；CookieManager 支持跨域凭证持久化；客户端支持直接输入 HTTPS 域名直连 DSH Web 控制台。[详细记录](CHANGELOG.md)。
+>
 > **0.4.3 更新**：Funnel、cpolar、cloudflared 远程通道支持 Linux（x64/arm64）；保存的局域网网卡断开不再阻断整个 DSH 启动（休眠等网卡回来）；插件多的用户手机端白屏修好（启动包分片 + 大 bundle 直通）。[详细记录](CHANGELOG.md)。
 >
 > **升级提醒**：0.4.3 插件可继续使用现有 Android App，已有设备无需重新配对。若要使用本次 Android 构建，请同时安装 0.4.3 App。[兼容说明](#兼容性)。

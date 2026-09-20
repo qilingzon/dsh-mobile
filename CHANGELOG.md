@@ -2,6 +2,15 @@
 
 Notable changes to DSH Mobile are recorded here. GitHub Releases remain the source for downloadable packages and complete generated commit notes.
 
+## 0.4.4 - 2026-09-20
+
+- **Cloudflare Access & Reverse Proxy Adaptation**:
+  - Resolve the "Navigation blocked / 已阻止跳转" error when connecting through Cloudflare Access, Cloudflare Zero Trust, or external OAuth login providers by allowing authentication redirect flows inside WebView without triggering cross-origin navigation traps.
+  - Enable third-party cookie persistence in `CookieManager` so Cloudflare Access authentication tokens (e.g. `CF_AppSession`) and edge session cookies are reliably preserved across app launches.
+- **Direct DSH Web Connection**:
+  - Support direct HTTPS URL connections in the Android client without requiring manual plugin pairing keys or QR code scanning.
+  - Allow seamless standalone mobile app operation for custom DSH deployments behind secure reverse proxies.
+
 ## 0.4.3 - 2026-09-19
 
 - Support Linux for the Funnel, cpolar and cloudflared remote providers, including x64 and arm64 Funnel host binaries.
